@@ -23,33 +23,13 @@ A clean-architecture Python application that loads historical Premier League mat
 
 ## 🖼️ Preview
 
-```
-┌─────────────────────────────────────────────────────┐
-│  Premier League Analytics                 Season ▾  │
-├─────────────────────────────────────────────────────┤
-│                                                      │
-│   Standings           Goals Over Time                │
-│   ┌──────────┐        ┌──────────────┐              │
-│   │ 1. Man C │        │     ╱╲       │              │
-│   │ 2. Arsnl │        │    ╱  ╲_╱╲   │              │
-│   │ 3. Liv   │        │ ╱╲╱        ╲ │              │
-│   │ ...      │        │╱            ╲│              │
-│   └──────────┘        └──────────────┘              │
-│                                                      │
-│   [ Compare two teams ▾ ]  [ 📄 Export Word ]       │
-│                                                      │
-└─────────────────────────────────────────────────────┘
-```
-
-*(Add real screenshots in `/assets` once you run it.)*
-
----
+<img width="880" height="608" alt="image" src="https://github.com/user-attachments/assets/e5775e1b-51fb-4187-b9b9-6f5eaee20976" />
 
 ## 🚀 Quickstart
 
 ```bash
 # 1. Clone
-git clone https://github.com/YOUR_USERNAME/premier-league-analytics.git
+git clone https://github.com/Eetff4422/premier-league-analytics.git
 cd premier-league-analytics
 
 # 2. Install
