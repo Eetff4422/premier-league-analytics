@@ -1,0 +1,176 @@
+"""
+Word exporter — turns a SeasonStanding + optional chart images into a .docx report.
+
+Uses python-docx. Charts can be embedded as PNG images (Plotly fig -> PNG needs kaleido,
+which is optional; if not installed, we skip the charts and still produce a clean report).
+"""
+
+from __future__ import annotations
+from datetime import datetime
+from pathlib import Path
+from typing import List
+
+from docx import Document
+from docx.shared import Cm, Pt, RGBColor
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
+
+from src.domain.entities import SeasonStanding
+
+
+PRIMARY_HEX = "37003C"
+ACCENT_HEX = "00BD5C"
+
+
+def _set_cell_bg(cell, hex_color: str) -> None:
+    """Apply a background color to a table cell (hex without '#')."""
+    tc_pr = cell._tc.get_or_add_tcPr()
+    shd = OxmlElement("w:shd")
+    shd.set(qn("w:val"), "clear")
+    shd.set(qn("w:color"), "auto")
+    shd.set(qn("w:fill"), hex_color)
+    tc_pr.append(shd)
+
+
+def generate_season_report(
+    standing: SeasonStanding,
+    output_path: str | Path,
+    chart_images: List[str | Path] | None = None,
+) -> Path:
+    """
+    Generate a Word report for a full season.
+
+    Args:
+        standing: the SeasonStanding object to render.
+        output_path: where to save the .docx.
+        chart_images: optional list of PNG paths to embed (e.g. Plotly exports).
+
+    Returns: the Path to the generated file.
+    """
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    doc = Document()
+
+    # ── Page margins ──
+    for section in doc.sections:
+        section.left_margin = Cm(2.0)
+        section.right_margin = Cm(2.0)
+        section.top_margin = Cm(2.0)
+        section.bottom_margin = Cm(2.0)
+
+    # ── Cover title ──
+    title = doc.add_paragraph()
+    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    run = title.add_run("Premier League Analytics")
+    run.bold = True
+    run.font.size = Pt(26)
+    run.font.color.rgb = RGBColor.from_string(PRIMARY_HEX)
+
+    subtitle = doc.add_paragraph()
+    subtitle.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    sub_run = subtitle.add_run(f"Season report — {standing.season}")
+    sub_run.font.size = Pt(14)
+    sub_run.font.color.rgb = RGBColor(0x55, 0x55, 0x55)
+
+    meta = doc.add_paragraph()
+    meta.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    meta_run = meta.add_run(f"Generated on {datetime.now():%d %B %Y}")
+    meta_run.italic = True
+    meta_run.font.size = Pt(10)
+    meta_run.font.color.rgb = RGBColor(0x77, 0x77, 0x77)
+
+    doc.add_paragraph()
+
+    # ── Executive summary ──
+    _add_heading(doc, "Executive summary")
+
+    if standing.rows:
+        champion = standing.rows[0]
+        summary = (
+            f"{champion.team} topped the table with {champion.points} points "
+            f"({champion.won}W–{champion.drawn}D–{champion.lost}L), "
+            f"scoring {champion.goals_for} and conceding {champion.goals_against} "
+            f"for a goal difference of {champion.goal_difference:+d}."
+        )
+        doc.add_paragraph(summary)
+
+        if len(standing.rows) >= 4:
+            top4 = ", ".join(r.team for r in standing.rows[:4])
+            doc.add_paragraph(f"Top 4 (UCL qualification spots): {top4}.")
+
+        if len(standing.rows) >= 3:
+            bottom3 = ", ".join(r.team for r in standing.rows[-3:])
+            doc.add_paragraph(f"Bottom 3 (relegation zone): {bottom3}.")
+
+    # ── Standings table ──
+    _add_heading(doc, "Final standings")
+
+    headers = ["#", "Team", "P", "W", "D", "L", "GF", "GA", "GD", "Pts"]
+    table = doc.add_table(rows=1, cols=len(headers))
+    table.style = "Light Grid Accent 1"
+
+    hdr_row = table.rows[0]
+    for i, h in enumerate(headers):
+        cell = hdr_row.cells[i]
+        cell.text = h
+        _set_cell_bg(cell, PRIMARY_HEX)
+        for para in cell.paragraphs:
+            for run in para.runs:
+                run.bold = True
+                run.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+                run.font.size = Pt(10)
+
+    for rank, stats in enumerate(standing.rows, start=1):
+        row = table.add_row().cells
+        values = [
+            str(rank),
+            stats.team,
+            str(stats.played),
+            str(stats.won),
+            str(stats.drawn),
+            str(stats.lost),
+            str(stats.goals_for),
+            str(stats.goals_against),
+            f"{stats.goal_difference:+d}",
+            str(stats.points),
+        ]
+        for i, v in enumerate(values):
+            row[i].text = v
+            for para in row[i].paragraphs:
+                for run in para.runs:
+                    run.font.size = Pt(10)
+
+    # ── Charts ──
+    if chart_images:
+        doc.add_page_break()
+        _add_heading(doc, "Visual analysis")
+        for img_path in chart_images:
+            p = Path(img_path)
+            if p.exists():
+                doc.add_picture(str(p), width=Cm(15))
+                doc.add_paragraph()
+
+    # ── Footer note ──
+    doc.add_paragraph()
+    footer_p = doc.add_paragraph()
+    footer_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    footer_run = footer_p.add_run(
+        "Source: football-data.co.uk — Generated by Premier League Analytics"
+    )
+    footer_run.italic = True
+    footer_run.font.size = Pt(9)
+    footer_run.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
+
+    doc.save(output_path)
+    return output_path
+
+
+def _add_heading(doc, text: str) -> None:
+    """Add a styled heading (we avoid default Heading styles to keep full control)."""
+    p = doc.add_paragraph()
+    run = p.add_run(text)
+    run.bold = True
+    run.font.size = Pt(14)
+    run.font.color.rgb = RGBColor.from_string(PRIMARY_HEX)
