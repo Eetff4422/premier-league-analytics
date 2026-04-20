@@ -136,7 +136,7 @@ MIT — see [LICENSE](LICENSE).
 
 ## 👤 About
 
-Built by **Franklin Essono** — data analyst / developer focused on turning messy operational data into tools that people actually use.
+Built by **Franklin Essono**.
 
 - 📧 essono@et.esiea.fr
 - 💼 [LinkedIn](https://linkedin.com/in/franklin-essono)
