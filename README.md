@@ -118,16 +118,6 @@ All data comes from [football-data.co.uk](https://www.football-data.co.uk/englan
 
 ---
 
-## 🗺️ Roadmap
-
-- [ ] Add xG (expected goals) data from Understat
-- [ ] Season-over-season trend comparison
-- [ ] Player-level stats (when FBref scraping is added)
-- [ ] Deploy a live demo on Render / Fly.io
-- [ ] Multi-league support (La Liga, Serie A, Ligue 1)
-
----
-
 ## 📄 License
 
 MIT — see [LICENSE](LICENSE).
