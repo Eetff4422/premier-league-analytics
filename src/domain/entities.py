@@ -1,7 +1,7 @@
 """
 Domain entities for Premier League analytics.
 
-Pure Python objects with no external dependencies (no pandas, no Dash, no I/O).
+Pure Python objects with no external dependencies.
 This layer defines *what* a match or a standing is in our problem domain.
 """
 

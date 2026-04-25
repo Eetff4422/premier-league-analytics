@@ -16,7 +16,7 @@ import requests
 
 
 BASE_URL = "https://www.football-data.co.uk/mmz4281"
-# Last few completed seasons — adjust as needed
+# Last few completed seasons
 SEASONS = ["2021/22", "2022/23", "2023/24", "2024/25"]
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -51,10 +51,10 @@ def main() -> int:
         try:
             download(s)
         except requests.RequestException as exc:
-            print(f"  ✗ Failed to download {s}: {exc}", file=sys.stderr)
+            print(f"  Failed to download {s}: {exc}", file=sys.stderr)
 
     print()
-    print("Done. Run `python main.py` to launch the dashboard.")
+    print("Done.")
     return 0
 
 

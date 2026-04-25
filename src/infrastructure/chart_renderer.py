@@ -1,7 +1,6 @@
 """
-Plotly chart renderer — turns domain/application objects into Plotly figures.
-
-Keeps all Plotly/chart styling in one place so it can be swapped out or themed centrally.
+Plotly chart renderer - turns domain/application objects into Plotly figures.
+This module contains functions that take domain/application objects (like SeasonStanding or TeamTimeline) and produce Plotly Figure objects. These functions are pure and have no side effects, making them easy to test and reuse across different parts of the application (e.g. the dashboard and the Word report).
 """
 
 from __future__ import annotations
@@ -13,7 +12,7 @@ from src.domain.entities import SeasonStanding
 from src.application.use_cases import TeamTimeline, HeadToHead
 
 
-# Shared color palette — consistent across the dashboard and the Word report
+# Shared color palette - consistent across the dashboard and the Word report
 PRIMARY = "#37003C"      # Premier League purple
 ACCENT = "#00FF87"       # Signature green
 ACCENT_DARK = "#04F5FF"
@@ -37,7 +36,7 @@ def _base_layout(title: str) -> dict:
 def render_standings_bar(standing: SeasonStanding, top_n: int = 10) -> go.Figure:
     """Horizontal bar chart of the top N teams by points."""
     top = standing.top(top_n)
-    top_reversed = list(reversed(top))   # so the #1 appears at the top
+    top_reversed = list(reversed(top))   # the #1 appears at the top
     fig = go.Figure(
         data=[
             go.Bar(

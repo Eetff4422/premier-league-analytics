@@ -1,9 +1,6 @@
 """
 Use cases: the orchestration layer.
-
-Each use case is a small, focused function that takes input (matches, teams, season)
-and returns a domain object. Use cases know *nothing* about Dash, Plotly, CSVs or Word —
-they just move domain objects around.
+This module contains the main application logic, orchestrating the domain entities to implement the use cases of the application.
 """
 
 from __future__ import annotations

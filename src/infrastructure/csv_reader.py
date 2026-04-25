@@ -1,5 +1,5 @@
 """
-CSV reader — parses football-data.co.uk match CSVs into domain Match objects.
+CSV reader - parses football-data.co.uk match CSVs into domain Match objects.
 
 CSV schema (relevant columns):
     Date:  'DD/MM/YYYY' or 'DD/MM/YY'
@@ -23,7 +23,6 @@ REQUIRED_COLUMNS = ["Date", "HomeTeam", "AwayTeam", "FTHG", "FTAG"]
 
 
 def _parse_date(raw: str) -> datetime:
-    """football-data.co.uk uses two formats depending on the era — try both."""
     for fmt in ("%d/%m/%Y", "%d/%m/%y"):
         try:
             return datetime.strptime(raw.strip(), fmt)
@@ -67,7 +66,7 @@ def load_matches(csv_path: str | Path) -> List[Match]:
 
 
 def list_available_seasons(data_dir: str | Path) -> List[str]:
-    """Return the list of available seasons inferred from filenames like `E0_2324.csv`."""
+    """Return the list of available seasons inferred from filenames."""
     data_dir = Path(data_dir)
     if not data_dir.exists():
         return []

@@ -1,4 +1,4 @@
-"""Tests for the application layer — use cases."""
+"""Tests for the application layer - use cases."""
 
 from datetime import date
 

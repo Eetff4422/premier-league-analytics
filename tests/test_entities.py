@@ -1,4 +1,4 @@
-"""Tests for the domain layer — no external dependencies, runs fast."""
+"""Tests for the domain layer."""
 
 from datetime import date
 

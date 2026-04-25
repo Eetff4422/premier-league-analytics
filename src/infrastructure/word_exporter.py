@@ -1,8 +1,5 @@
 """
-Word exporter — turns a SeasonStanding + optional chart images into a .docx report.
-
-Uses python-docx. Charts can be embedded as PNG images (Plotly fig -> PNG needs kaleido,
-which is optional; if not installed, we skip the charts and still produce a clean report).
+Word exporter - turns a SeasonStanding + optional chart images into a .docx report.
 """
 
 from __future__ import annotations
@@ -24,7 +21,7 @@ ACCENT_HEX = "00BD5C"
 
 
 def _set_cell_bg(cell, hex_color: str) -> None:
-    """Apply a background color to a table cell (hex without '#')."""
+    """Apply a background color to a table cell."""
     tc_pr = cell._tc.get_or_add_tcPr()
     shd = OxmlElement("w:shd")
     shd.set(qn("w:val"), "clear")
